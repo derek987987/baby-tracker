@@ -18,6 +18,11 @@ struct SummaryView: View {
                 
                 Text("Diaper Log")
                 DiaperLogChartView(entries: logs)
+                
+                Button("Export PDF Report") {
+                    _ = PDFReportService.generateReport(entries: logs)
+                }
+                .padding()
             }
         }
         .navigationTitle("Analytics")
