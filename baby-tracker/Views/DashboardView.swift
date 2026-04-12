@@ -5,17 +5,16 @@ struct DashboardView: View {
     @Query(sort: \LogEntry.timestamp, order: .reverse) private var logs: [LogEntry]
     @ObservedObject var viewModel: DashboardViewModel
     @Query private var babies: [BabyProfile]
-    
+    @State private var activeBabyID: UUID?
     @State private var showingManualEntry = false
     
     var body: some View {
         NavigationStack {
             VStack {
-                if let baby = babies.first {
-                    Text(baby.name)
-                        .font(.largeTitle)
-                    
-                    List(logs) { log in
+                ProfileSelector(activeBabyID: $activeBabyID)
+                
+                if let baby = babies.first(where: { $0.id == activeBabyID }) ?? babies.first {
+                    List(logs.filter { $0.babyID == baby.id }) { log in
                         TimelineRow(entry: log)
                     }
                     
@@ -23,17 +22,19 @@ struct DashboardView: View {
                         viewModel.logEvent(event, babyID: baby.id)
                     })
                 } else {
-                    Text("No baby profile found.")
+                    Text("Add a baby profile to get started.")
                 }
             }
             .toolbar {
-                Button(action: { showingManualEntry = true }) {
-                    Image(systemName: "plus")
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingManualEntry = true }) { Image(systemName: "plus") }
                 }
             }
             .sheet(isPresented: $showingManualEntry) {
-                if let baby = babies.first {
+                if let baby = babies.first(where: { $0.id == activeBabyID }) ?? babies.first {
                     ManualEntryForm(babyID: baby.id)
+                } else {
+                    ProfileManagementView()
                 }
             }
         }
