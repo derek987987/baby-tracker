@@ -1,10 +1,3 @@
-//
-//  baby_trackerApp.swift
-//  baby-tracker
-//
-//  Created by Derek Chung on 12/4/2026.
-//
-
 import SwiftUI
 import SwiftData
 
@@ -12,7 +5,8 @@ import SwiftData
 struct baby_trackerApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            CareEvent.self,
+            BabyProfile.self,
+            LogEntry.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -25,8 +19,8 @@ struct baby_trackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(modelContext: sharedModelContainer.mainContext)
+            ContentView()
+                .modelContainer(sharedModelContainer)
         }
-        .modelContainer(sharedModelContainer)
     }
 }
