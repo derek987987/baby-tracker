@@ -1,19 +1,18 @@
 import Foundation
 import SwiftData
 
-final class SwiftDataService {
-    var modelContext: ModelContext
+struct SwiftDataService {
+    let modelContext: ModelContext
     
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
     
-    func addEvent(_ event: CareEvent) {
-        modelContext.insert(event)
+    func saveBabyProfile(_ profile: BabyProfile) {
+        modelContext.insert(profile)
     }
     
-    func fetchEvents() throws -> [CareEvent] {
-        let descriptor = FetchDescriptor<CareEvent>(sortBy: [SortDescriptor(\.timestamp, order: .reverse)])
-        return try modelContext.fetch(descriptor)
+    func saveLogEntry(_ entry: LogEntry) {
+        modelContext.insert(entry)
     }
 }
