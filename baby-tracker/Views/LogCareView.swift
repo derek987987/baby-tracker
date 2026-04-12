@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LogCareView: View {
     @ObservedObject var viewModel: DashboardViewModel
+    let babyID: UUID
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -11,19 +12,19 @@ struct LogCareView: View {
             
             HStack {
                 Button("Feeding") {
-                    viewModel.logEvent(type: "Feeding")
+                    viewModel.logEvent(.bottle, babyID: babyID)
                     dismiss()
                 }
                 .buttonStyle(.borderedProminent)
                 
                 Button("Diaper") {
-                    viewModel.logEvent(type: "Diaper")
+                    viewModel.logEvent(.wetDiaper, babyID: babyID)
                     dismiss()
                 }
                 .buttonStyle(.borderedProminent)
                 
                 Button("Sleep") {
-                    viewModel.logEvent(type: "Sleep")
+                    viewModel.logEvent(.sleep, babyID: babyID)
                     dismiss()
                 }
                 .buttonStyle(.borderedProminent)
