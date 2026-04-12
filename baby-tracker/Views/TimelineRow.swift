@@ -1,43 +1,39 @@
 import SwiftUI
 
 struct TimelineRow: View {
-    let event: CareEvent
+    let entry: LogEntry
     
     var body: some View {
-        HStack(spacing: 15) {
-            Image(systemName: iconName(for: event.type))
-                .foregroundColor(color(for: event.type))
-                .padding(10)
-                .background(color(for: event.type).opacity(0.15))
-                .clipShape(Circle())
+        HStack {
+            Image(systemName: iconName)
+                .font(.title2)
+                .foregroundColor(.blue)
             
-            VStack(alignment: .leading, spacing: 4) {
-                Text(event.type)
+            VStack(alignment: .leading) {
+                Text(entry.eventType.rawValue.capitalized)
                     .font(.headline)
-                Text(event.timestamp, style: .time)
-                    .font(.caption)
+                Text(entry.timestamp, style: .time)
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
             }
+            
             Spacer()
+            
+            if let amount = entry.amount {
+                Text("\(amount, specifier: "%.0f") ml")
+                    .font(.subheadline)
+            }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 8)
     }
     
-    private func iconName(for type: String) -> String {
-        switch type {
-        case "Feeding": return "fork.knife"
-        case "Diaper": return "drop.fill"
-        case "Sleep": return "moon.fill"
-        default: return "info.circle"
-        }
-    }
-    
-    private func color(for type: String) -> Color {
-        switch type {
-        case "Feeding": return .blue
-        case "Diaper": return .green
-        case "Sleep": return .purple
-        default: return .gray
+    private var iconName: String {
+        switch entry.eventType {
+        case .sleep: return "moon.fill"
+        case .nursing: return "heart.fill"
+        case .bottle: return "bottle.fill"
+        case .wetDiaper, .dirtyDiaper: return "drop.fill"
+        case .solidFood: return "fork.knife"
         }
     }
 }
