@@ -15,4 +15,10 @@ class DashboardViewModel: ObservableObject {
         modelContext.insert(entry)
         try? modelContext.save()
     }
+    
+    func logFeeding(babyID: UUID, type: EventType, amount: Double? = nil, side: Side? = nil) {
+        let entry = LogEntry(babyID: babyID, eventType: type, side: side, amount: amount)
+        modelContext.insert(entry)
+        try? modelContext.save()
+    }
 }
