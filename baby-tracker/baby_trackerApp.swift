@@ -19,7 +19,7 @@ struct baby_trackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(modelContext: sharedModelContainer.mainContext)
+            ContentView()
         }
         .modelContainer(sharedModelContainer)
     }

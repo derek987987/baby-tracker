@@ -1,25 +1,19 @@
-import Foundation
+import SwiftUI
 import SwiftData
 import Combine
 
-final class SummaryViewModel: ObservableObject {
-    @Published var totalSleepHours: Double = 0
-    @Published var totalFeedingVolume: Double = 0
+@MainActor
+class SummaryViewModel: ObservableObject {
+    private var modelContext: ModelContext
     
-    func calculateSummary(for events: [CareEvent]) {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        
-        let todayEvents = events.filter { calendar.isDate($0.timestamp, inSameDayAs: today) }
-        
-        totalSleepHours = todayEvents
-            .filter { $0.type == "Sleep" }
-            .compactMap { Double($0.metadata["duration"] ?? "0") }
-            .reduce(0, +)
-            
-        totalFeedingVolume = todayEvents
-            .filter { $0.type == "Feeding" }
-            .compactMap { Double($0.metadata["volume"] ?? "0") }
-            .reduce(0, +)
+    init(modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
+    
+    func fetchHistoricalData(for babyID: UUID) -> [LogEntry] {
+        let descriptor = FetchDescriptor<LogEntry>(
+            predicate: #Predicate { $0.babyID == babyID }
+        )
+        return (try? modelContext.fetch(descriptor)) ?? []
     }
 }

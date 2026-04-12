@@ -1,29 +1,22 @@
-//
-//  ContentView.swift
-//  baby-tracker
-//
-//  Created by Derek Chung on 12/4/2026.
-//
-
 import SwiftUI
 import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @StateObject private var viewModel: DashboardViewModel
-
-    init(modelContext: ModelContext) {
-        _viewModel = StateObject(wrappedValue: DashboardViewModel(modelContext: modelContext))
-    }
-
+    
     var body: some View {
-        DashboardView(viewModel: viewModel)
+        TabView {
+            DashboardView(viewModel: DashboardViewModel(modelContext: modelContext))
+                .tabItem {
+                    Label("Dashboard", systemImage: "house")
+                }
+            
+            NavigationStack {
+                SummaryView(viewModel: SummaryViewModel(modelContext: modelContext), babyID: UUID()) // Placeholder babyID
+            }
+            .tabItem {
+                Label("Analytics", systemImage: "chart.bar")
+            }
+        }
     }
-}
-
-#Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: CareEvent.self, configurations: config)
-    return ContentView(modelContext: container.mainContext)
-        .modelContainer(container)
 }
