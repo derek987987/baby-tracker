@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 enum EventType: String, Codable, CaseIterable {
-    case sleep, nursing, bottle, wetDiaper, dirtyDiaper, solidFood
+    case sleep, nursing, bottle, wetDiaper, dirtyDiaper, solidFood, pumping, milestone, others, vaccination, walk, medicine, hospital, vomit, rash, injury, bath
 }
 
 enum Side: String, Codable, CaseIterable {
