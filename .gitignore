@@ -8,3 +8,14 @@ Packages/
 *.swp
 .vscode/
 .idea/
+
+# Sensitive / Local Data
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.cer
+*.cert
+*.tokens
+Thumbs.db
