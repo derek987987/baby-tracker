@@ -7,6 +7,7 @@ struct DashboardView: View {
     @Query private var babies: [BabyProfile]
     @State private var activeBabyID: UUID?
     @State private var showingManualEntry = false
+    @State private var selectedEvent: EventType?
     
     var body: some View {
         NavigationStack {
@@ -14,13 +15,20 @@ struct DashboardView: View {
                 ProfileSelector(activeBabyID: $activeBabyID)
                 
                 if let baby = babies.first(where: { $0.id == activeBabyID }) ?? babies.first {
-                    List(logs.filter { $0.babyID == baby.id }) { log in
-                        TimelineRow(entry: log)
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            ForEach(0..<24, id: \.self) { hour in
+                                HourBucketView(hour: hour, logs: viewModel.logs(for: hour, in: logs.filter { $0.babyID == baby.id }))
+                            }
+                        }
+                        .padding(.top)
                     }
                     
                     QuickInputBar(onLog: { event in
-                        viewModel.logEvent(event, babyID: baby.id)
+                        selectedEvent = event
+                        showingManualEntry = true
                     })
+                    .padding(.bottom)
                 } else {
                     Text("Add a baby profile to get started.")
                 }
@@ -32,7 +40,7 @@ struct DashboardView: View {
             }
             .sheet(isPresented: $showingManualEntry) {
                 if let baby = babies.first(where: { $0.id == activeBabyID }) ?? babies.first {
-                    ManualEntryForm(babyID: baby.id)
+                    ManualEntryForm(babyID: baby.id, defaultType: selectedEvent ?? .nursing)
                 } else {
                     ProfileManagementView()
                 }

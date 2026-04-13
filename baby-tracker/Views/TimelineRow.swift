@@ -2,38 +2,39 @@ import SwiftUI
 
 struct TimelineRow: View {
     let entry: LogEntry
+    @State private var showingEdit = false
     
     var body: some View {
-        HStack {
-            Image(systemName: iconName)
-                .font(.title2)
-                .foregroundColor(.blue)
-            
-            VStack(alignment: .leading) {
-                Text(entry.eventType.rawValue.capitalized)
-                    .font(.headline)
-                Text(entry.timestamp, style: .time)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+        Button(action: { showingEdit = true }) {
+            HStack(spacing: 15) {
+                LogEventIcon(eventType: entry.eventType)
+                    .frame(width: 40, height: 40)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(entry.eventType.rawValue.capitalized)
+                        .font(.headline)
+                        .scaledToFill()
+                        .minimumScaleFactor(0.8)
+                    Text(entry.timestamp, style: .time)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                if let amount = entry.amount {
+                    Text("\(amount, specifier: "%.0f")ml")
+                        .font(.subheadline)
+                        .bold()
+                }
             }
-            
-            Spacer()
-            
-            if let amount = entry.amount {
-                Text("\(amount, specifier: "%.0f") ml")
-                    .font(.subheadline)
-            }
+            .padding(12)
+            .background(RoundedRectangle(cornerRadius: 16).fill(Color(.secondarySystemBackground)))
+            .padding(.horizontal)
         }
-        .padding(.vertical, 8)
-    }
-    
-    private var iconName: String {
-        switch entry.eventType {
-        case .sleep: return "moon.fill"
-        case .nursing: return "heart.fill"
-        case .bottle: return "bottle.fill"
-        case .wetDiaper, .dirtyDiaper: return "drop.fill"
-        case .solidFood: return "fork.knife"
+        .buttonStyle(PlainButtonStyle())
+        .sheet(isPresented: $showingEdit) {
+            EditEntrySheet(entry: entry)
         }
     }
 }

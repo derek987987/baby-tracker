@@ -5,18 +5,29 @@ struct HourBucketView: View {
     let logs: [LogEntry]
     
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
+        HStack(alignment: .top, spacing: 0) {
+            // Time column always visible
             Text("\(hour):00")
-                .font(.caption2)
+                .font(.system(.caption2, design: .rounded))
                 .foregroundColor(.gray)
-                .frame(width: 40)
-
+                .frame(width: 50, alignment: .leading)
+                .padding(.top, 4)
+            
+            // Content column
             VStack(alignment: .leading, spacing: 5) {
-                ForEach(logs) { entry in
-                    TimelineRow(entry: entry)
+                if logs.isEmpty {
+                    Rectangle()
+                        .fill(Color.clear)
+                        .frame(height: 30) // Min height to keep bucket visible
+                } else {
+                    ForEach(logs) { entry in
+                        TimelineRow(entry: entry)
+                    }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.vertical, 5)
+        .padding(.horizontal)
+        .padding(.vertical, 4)
     }
 }

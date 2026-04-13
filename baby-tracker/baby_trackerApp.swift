@@ -17,9 +17,15 @@ struct baby_trackerApp: App {
         }
     }()
 
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if hasCompletedOnboarding {
+                ContentView()
+            } else {
+                LandingView()
+            }
         }
         .modelContainer(sharedModelContainer)
     }

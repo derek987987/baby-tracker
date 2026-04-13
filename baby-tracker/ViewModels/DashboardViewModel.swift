@@ -21,4 +21,9 @@ class DashboardViewModel: ObservableObject {
         modelContext.insert(entry)
         try? modelContext.save()
     }
+    
+    func logs(for hour: Int, in allLogs: [LogEntry]) -> [LogEntry] {
+        let calendar = Calendar.current
+        return allLogs.filter { calendar.component(.hour, from: $0.timestamp) == hour }
+    }
 }
