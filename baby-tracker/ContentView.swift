@@ -2,6 +2,22 @@ import SwiftUI
 import SwiftData
 import Combine
 
+// MARK: - App Models
+enum AppStep: Int {
+    case landing = 0
+    case intro = 1
+    case nickname = 2
+    case gender = 3
+    case dob = 4
+    case tracker = 5
+}
+
+enum Gender: String, CaseIterable {
+    case boy = "Boy"
+    case girl = "Girl"
+    case notSet = "Gender not set"
+}
+
 // MARK: - App State
 class BabyAppState: ObservableObject {
     @Published var currentStep: AppStep = .landing
@@ -37,23 +53,6 @@ class BabyAppState: ObservableObject {
     }
 }
 
-// MARK: - App Step
-enum AppStep: Int {
-    case landing = 0
-    case intro = 1
-    case nickname = 2
-    case gender = 3
-    case dob = 4
-    case tracker = 5
-}
-
-// MARK: - Supporting Types
-enum Gender: String, CaseIterable {
-    case boy = "Boy"
-    case girl = "Girl"
-    case notSet = "Gender not set"
-}
-
 // MARK: - Main Content View
 struct ContentView: View {
     @Query private var babies: [BabyProfile]
@@ -61,11 +60,16 @@ struct ContentView: View {
     @StateObject private var state = BabyAppState()
     
     var body: some View {
-        Group {
-            if hasCompletedOnboarding && !babies.isEmpty {
-                MainTabView()
-            } else {
-                OnboardingFlowView(state: state)
+        ZStack {
+            Color.appDarkGray.ignoresSafeArea()
+            
+            Group {
+                // If we have babies, go to tracker. Otherwise, onboarding.
+                if !babies.isEmpty && hasCompletedOnboarding {
+                    TrackerScreen(state: state)
+                } else {
+                    OnboardingFlowView(state: state)
+                }
             }
         }
     }
@@ -74,48 +78,27 @@ struct ContentView: View {
 // MARK: - Onboarding Flow
 struct OnboardingFlowView: View {
     @ObservedObject var state: BabyAppState
-    @State private var step = 0
-    @State private var isMovingForward = true
     
     var body: some View {
-        ZStack {
-            Color.appBackground.ignoresSafeArea()
-            
-            Group {
-                switch step {
-                case 0: LandingScreen(state: state)
-                case 1: IntroScreen(state: state)
-                case 2: NicknameScreen(state: state)
-                case 3: GenderScreen(state: state)
-                case 4: DOBScreen(state: state)
-                default: LandingScreen(state: state)
-                }
+        Group {
+            switch state.currentStep {
+            case .landing:
+                LandingScreen(state: state)
+            case .intro:
+                IntroScreen(state: state)
+            case .nickname:
+                NicknameScreen(state: state)
+            case .gender:
+                GenderScreen(state: state)
+            case .dob:
+                DOBScreen(state: state)
+            case .tracker:
+                TrackerScreen(state: state)
             }
-            .transition(.asymmetric(
-                insertion: .move(edge: isMovingForward ? .trailing : .leading).combined(with: .opacity),
-                removal: .move(edge: isMovingForward ? .leading : .trailing).combined(with: .opacity)
-            ))
         }
+        .transition(.asymmetric(
+            insertion: .move(edge: state.isMovingForward ? .trailing : .leading).combined(with: .opacity),
+            removal: .move(edge: state.isMovingForward ? .leading : .trailing).combined(with: .opacity)
+        ))
     }
-    
-    func next() {
-        isMovingForward = true
-        withAnimation(.easeInOut(duration: 0.3)) { step += 1 }
-    }
-    
-    func back() {
-        isMovingForward = false
-        withAnimation(.easeInOut(duration: 0.3)) { step -= 1 }
-    }
-}
-
-// MARK: - Colors (Injected for global availability)
-extension Color {
-    static let appBackground = Color(red: 28/255, green: 28/255, blue: 30/255)
-    static let appAccent = Color(red: 249/255, green: 124/255, blue: 136/255)
-    static let appDarkGray = Color(red: 36/255, green: 36/255, blue: 38/255)
-    static let appMediumGray = Color(red: 58/255, green: 58/255, blue: 60/255)
-    static let appTextSecondary = Color(red: 142/255, green: 142/255, blue: 147/255)
-    static let timelineSidebar = Color(red: 44/255, green: 44/255, blue: 46/255)
-    static let highlightBlue = Color(red: 100/255, green: 150/255, blue: 255/255)
 }

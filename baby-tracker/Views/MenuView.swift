@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct MenuView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
@@ -39,9 +40,24 @@ struct MenuView: View {
                     Button("Reset Onboarding", role: .destructive) {
                         hasCompletedOnboarding = false
                     }
+                    Button("Clear All Data", role: .destructive) {
+                        clearAllData()
+                    }
                 }
             }
             .navigationTitle("Menu")
+        }
+    }
+    
+    @Environment(\.modelContext) private var modelContext
+    
+    private func clearAllData() {
+        do {
+            try modelContext.delete(model: BabyProfile.self)
+            try modelContext.delete(model: LogEntry.self)
+            hasCompletedOnboarding = false
+        } catch {
+            print("Failed to clear data: \(error)")
         }
     }
 }

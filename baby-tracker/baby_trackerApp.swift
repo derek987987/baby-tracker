@@ -21,11 +21,7 @@ struct baby_trackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if hasCompletedOnboarding {
-                ContentView()
-            } else {
-                LandingView()
-            }
+            ContentView()
         }
         .modelContainer(sharedModelContainer)
     }
